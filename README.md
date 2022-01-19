@@ -12,11 +12,22 @@ npm run build
 npm link --force
 
 # use
-
+mr-pdf \
+--initialDocURLs="http://localhost:3000/docs/intermediate/BFF/bff-prepare" \
+--lastDocURL="http://localhost:3000/docs/intermediate/BFF/bff-verification" \
+--contentSelector="article" \
+--paginationSelector=".pagination-nav__item--next > a" \
+--excludeSelectors=".margin-vert--xl a,.theme-doc-footer" \
+--coverImage="http://localhost:3000/img/docusaurus.png" \
+--coverTitle="Java Backend Developer Guide" \
+--coverSub="-- for BFF" \
+--waitForRender=3 \
+--outputPDFFilename="Java Backend Developer Guide 03 - BFF.pdf"
 
 ```
 
 > networkidle0 - consider navigation to be finished when there are no more than 0 network connections for at least 500 ms
+>
 > networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
 
 ## 📌 Introduction
