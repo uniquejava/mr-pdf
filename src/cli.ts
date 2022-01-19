@@ -16,6 +16,7 @@ program
     'set urls to start generating PDF from',
     commaSeparatedList,
   )
+  .option('--lastDocURL <url>', 'set the last url to be generated')
   .option(
     '--excludeURLs <urls>',
     'urls to be excluded in PDF',

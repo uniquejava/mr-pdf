@@ -4,12 +4,13 @@ import puppeteer = require('puppeteer');
 let contentHTML = '';
 export interface generatePDFOptions {
   initialDocURLs: Array<string>;
+  lastDocURL: string;
   excludeURLs: Array<string>;
   outputPDFFilename: string;
   pdfMargin: puppeteer.PDFOptions['margin'];
   contentSelector: string;
   paginationSelector: string;
-  pdfFormat: puppeteer.PDFFormat;
+  pdfFormat: puppeteer.PaperFormat;
   excludeSelectors: Array<string>;
   cssStyle: string;
   puppeteerArgs: Array<string>;
@@ -22,6 +23,7 @@ export interface generatePDFOptions {
 
 export async function generatePDF({
   initialDocURLs,
+  lastDocURL,
   excludeURLs,
   outputPDFFilename = 'mr-pdf.pdf',
   pdfMargin = { top: 32, right: 32, bottom: 32, left: 32 },
@@ -52,7 +54,7 @@ export async function generatePDF({
       if (waitForRender) {
         await page.goto(`${nextPageURL}`);
         console.log(chalk.green('Rendering...'));
-        await page.waitFor(waitForRender);
+        await page.waitForTimeout(waitForRender * 1000);
       } else {
         // Go to the page specified by nextPageURL
         await page.goto(`${nextPageURL}`, {
@@ -86,22 +88,31 @@ export async function generatePDF({
       );
 
       // Make joined content html
-      if (excludeURLs && excludeURLs.includes(nextPageURL)) {
+      if (
+        excludeURLs &&
+        excludeURLs.length > 0 &&
+        nextPageURL.startsWith(excludeURLs[0])
+      ) {
         console.log(chalk.green('This URL is excluded.'));
       } else {
         contentHTML += html;
         console.log(chalk.green('Success'));
       }
 
-      // Find next page url before DOM operations
-      nextPageURL = await page.evaluate((paginationSelector) => {
-        const element = document.querySelector(paginationSelector);
-        if (element) {
-          return (element as HTMLLinkElement).href;
-        } else {
-          return '';
-        }
-      }, paginationSelector);
+      if (lastDocURL && nextPageURL == lastDocURL) {
+        console.log(chalk.green('Last Doc URL reached.'));
+        nextPageURL = '';
+      } else {
+        // Find next page url before DOM operations
+        nextPageURL = await page.evaluate((paginationSelector) => {
+          const element = document.querySelector(paginationSelector);
+          if (element) {
+            return (element as HTMLLinkElement).href;
+          } else {
+            return '';
+          }
+        }, paginationSelector);
+      }
     }
   }
 
@@ -125,7 +136,7 @@ export async function generatePDF({
       justify-content: center;
       align-items: center;
       height: 100vh;
-      page-break-after: always;  
+      page-break-after: always;
       text-align: center;
     "
   >
