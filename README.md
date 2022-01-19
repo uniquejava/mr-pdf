@@ -11,7 +11,19 @@ usage:
 npm run build
 npm link --force
 
-# use
+# usage quick
+node lib/cli.js \
+--initialDocURLs="http://localhost:3000/docs/intermediate/BFF/bff-prepare" \
+--lastDocURL="http://localhost:3000/docs/intermediate/BFF/bff-verification" \
+--paginationSelector=".pagination-nav__item--next > a" \
+--contentSelector="article" \
+--coverImage="http://localhost:3000/img/docusaurus.png" \
+--coverTitle="Java Backend Developer Guide" \
+--coverSub="-- for BFF" \
+--outputPDFFilename="MyBook.pdf"
+
+
+# usage full
 mr-pdf \
 --initialDocURLs="http://localhost:3000/docs/intermediate/BFF/bff-prepare" \
 --lastDocURL="http://localhost:3000/docs/intermediate/BFF/bff-verification" \
@@ -26,9 +38,58 @@ mr-pdf \
 
 ```
 
-> networkidle0 - consider navigation to be finished when there are no more than 0 network connections for at least 500 ms
->
-> networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
+## TOC
+
+```html
+<div class="toc-page" style="page-break-after: always;">
+  <h1 class="toc-header">Table of contents:</h1>
+  <ul class="toc-list">
+    <li class="toc-item toc-item-1" style="margin-left:0px">
+      <a href="#9pcyx-0">准备bff项目</a>
+    </li>
+    <li class="toc-item toc-item-2" style="margin-left:20px">
+      <a href="#bhbrd-1">导入 bff​</a>
+    </li>
+    <li class="toc-item toc-item-1" style="margin-left:0px">
+      <a href="#fe12j-2">Service层(bff)</a>
+    </li>
+    <li class="toc-item toc-item-2" style="margin-left:20px">
+      <a href="#er582-3">创建 TodoClient​</a>
+    </li>
+    <li class="toc-item toc-item-1" style="margin-left:0px">
+      <a href="#ldlth-4">Controller层(bff)</a>
+    </li>
+    <li class="toc-item toc-item-2" style="margin-left:20px">
+      <a href="#dfpsz-5">创建 TodoController​</a>
+    </li>
+    <li class="toc-item toc-item-1" style="margin-left:0px">
+      <a href="#w6t7a-6">验证bff项目</a>
+    </li>
+  </ul>
+</div>
+```
+
+## Bookmark
+
+观望(js)： https://github.com/Hopding/pdf-lib
+
+暂时的方案（python)：https://github.com/RussellLuo/pdfbookmarker
+
+等待 Puppeteer 支持： https://github.com/puppeteer/puppeteer/issues/1778
+
+pagedjs: https://www.pagedjs.org/posts/2020-02-19-toc/
+
+puppeteer + parse(mozilla/pdf.js) + merge(rkusa/pdfjs): https://medium.com/@pofider/generate-pdf-with-toc-using-chrome-c3b44f924ff9
+
+The fundamental idea for adding TOC is the following…
+
+1. 👉 Prepare html with TOC at the top, just skip the page numbers. Include the anchors so the TOC links are clickable and navigates reader to the particular chapter (mr-pdf 已经实现)
+2. 👉 Let chrome convert this html into pdf (mr-pdf 已经实现)
+3. 👉 Parse the output pdf and find out the page numbers of the particular chapters
+4. 👉 Prepare another html which represents just TOC, but this time it will also include page numbers which we parsed in the previous step.
+5. 👉 Convert the TOC html into pdf using chrome
+6. 👉 Merge both pdfs together.
+7. 👉 Now we have pdf with the TOC at the beginning.
 
 ## 📌 Introduction
 

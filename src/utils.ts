@@ -211,6 +211,8 @@ function generateToc(contentHtml: string) {
   );
 
   function htmlReplacer(matchedStr: string) {
+    console.log('matchedStr=', matchedStr);
+
     // docusaurus inserts #s into headers for direct links to the header
     const headerText = matchedStr
       .replace(/<a[^>]*>#<\/a( )*>/g, '')
@@ -221,14 +223,21 @@ function generateToc(contentHtml: string) {
       headers.length
     }`;
 
+    console.log('headerId=', headerId);
+
     // level is h<level>
     const level = Number(matchedStr[matchedStr.indexOf('h') + 1]);
+
+    console.log('level=', level);
 
     headers.push({
       header: headerText,
       level,
       id: headerId,
     });
+
+    // matchedStr => <h1>准备bff项目</h1>
+    // modifiedContentHTML => <h1 id="0jsqj-0">准备bff项目</h1>
 
     const modifiedContentHTML = matchedStr.replace(/<h[1-3].*?>/g, (header) => {
       if (header.match(/id( )*=( )*"/g)) {
@@ -237,6 +246,8 @@ function generateToc(contentHtml: string) {
         return header.substring(0, header.length - 1) + ` id="${headerId}">`;
       }
     });
+
+    console.log('modifiedContentHTML=', modifiedContentHTML);
 
     return modifiedContentHTML;
   }
@@ -256,6 +267,8 @@ function generateToc(contentHtml: string) {
     <ul class="toc-list">${toc}</ul>
   </div>
   `;
+
+  console.log('tocHTML=', tocHTML);
 
   return { modifiedContentHTML, tocHTML };
 }
